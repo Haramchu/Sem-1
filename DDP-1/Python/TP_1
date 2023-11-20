@@ -1,0 +1,205 @@
+import tkinter as tk
+import random
+from tkinter import Variable, messagebox
+import turtle
+
+#membuat input box. sumber = https://realpython.com/python-gui-tkinter/
+#set window input batu bata lapisan paling bawah dan ukurannya
+
+window1 = tk.Tk()
+window1.title ("Input")
+window1.resizable (False,False)
+window1.geometry ("400x150")
+
+#set row dan column
+window1.rowconfigure ([0,1,2], minsize=50)
+window1.columnconfigure ([0,1], minsize=200)
+
+#set label dan input box
+label1 = tk.Label(window1, text="Jumlah batu bata pada lapisan paling bawah :", justify="center")
+label1.grid (row = 0, columnspan = 2)
+
+input1 = tk.Entry(window1, width = 40)
+input1.grid (row = 1, columnspan = 2)
+
+#definisi button
+def cancel() :
+    quit()
+
+def ok1() :
+    global input1
+    input1 = int(input1.get())
+    #error message apabila data tidak sesuai
+
+    if input1 < 0 :
+        messagebox.showerror("Terlalu kecil", "Nilai terkecil yang diperbolehkan adalah 1. Mohon coba kembali.")
+        window1.destroy()
+    elif input1 > 25:
+        messagebox.showerror("Terlalu besar", "Nilai terbesar yang diperbolehkan adalah 25. Mohon coba kembali.")
+        window1.destroy()
+    else :
+        #apabila data sesuai, lanjut ke input selanjutnya
+        #set window input batu bata lapisan paling atas dan ukurannya
+        global window2
+        window2 = tk.Tk()
+        window2.title ("Input")
+        window2.resizable (False,False)
+        window2.geometry ("400x150")
+
+        #set row dan column
+        window2.rowconfigure ([0,1,2], minsize=50)
+        window2.columnconfigure ([0,1], minsize=200)
+
+        #set label dan input box
+        label2 = tk.Label(window2, text="Jumlah batu bata pada lapisan paling atas :", justify="center")
+        label2.grid (row = 0, columnspan = 2)
+
+        global input2
+        input2 = tk.Entry(window2, width = 40)
+        input2.grid (row = 1, columnspan = 2)
+
+        #set button
+        button_ok2 = tk.Button(window2, text="Ok", command=ok2, width = 10)
+        button_ok2.grid (row = 2, column = 0)
+
+        button_cancel2 = tk.Button(window2, text="Cancel", command=cancel, width = 10)
+        button_cancel2.grid (row = 2, column = 1)
+        window1.destroy()
+
+def ok2() : 
+    global input2
+    input2 = int(input2.get())
+    #error message apabila data tidak sesuai
+    if input2 < 1 :
+        messagebox.showerror("Terlalu kecil", "Nilai terkecil yang diperbolehkan adalah 1. Mohon coba kembali.")
+        window2.destroy()
+    elif input2 >= input1:
+        messagebox.showerror("Terlalu besar", "Nilai harus lebih kecil dari jumlah batu bata lapisan bawah. Mohon coba kembali.")
+        window2.destroy()
+    else :
+        #apabila data sesuai, lanjut ke input selanjutnya
+        #set window input panjang batu bata dan ukurannya
+        global window3
+        window3 = tk.Tk()
+        window3.title ("Input")
+        window3.resizable (False,False)
+        window3.geometry ("400x150")
+        #set row dan column
+        window3.rowconfigure ([0,1,2], minsize=50)
+        window3.columnconfigure ([0,1], minsize=200)
+        #set label dan input box
+        label3 = tk.Label(window3, text="Panjang satu buah batu bata (piksel) :", justify="center")
+        label3.grid (row = 0, columnspan = 2)
+
+        global input3
+        input3 = tk.Entry(window3, width = 40)
+        input3.grid (row = 1, columnspan = 2)
+
+        #set button
+        button_ok3 = tk.Button(window3, text="Ok", command=ok3, width = 10)
+        button_ok3.grid (row = 2, column = 0)
+
+        button_cancel = tk.Button(window3, text="Cancel", command=cancel, width = 10)
+        button_cancel.grid (row = 2, column = 1)
+        window2.destroy()
+
+def ok3() :
+    window3.destroy
+    global input3
+    input3 = int(input3.get())
+    #error message apabila data tidak sesuai
+    if input3 < 0 :
+        messagebox.showerror("Terlalu kecil", "Nilai terkecil yang diperbolehkan adalah 1. Mohon coba kembali.")
+        window3.destroy()
+    elif input3 > 35:
+        messagebox.showerror("Terlalu besar", "Nilai terbesar yang diperbolehkan adalah 35. Mohon coba kembali.")
+        window3.destroy()
+    else :
+        #apabila data sesuai, lanjut ke input selanjutnya
+        #set window input lebar batu bata dan ukurannya
+        global window4
+        window4 = tk.Tk()
+        window4.title ("Input")
+        window4.resizable (False,False)
+        window4.geometry ("400x150")
+        #set row dan column
+        window4.rowconfigure ([0,1,2], minsize=50)
+        window4.columnconfigure ([0,1], minsize=200)
+        #set label dan input box
+        label4 = tk.Label(window4, text="Lebar satu buah batu bata (piksel) :", justify="center")
+        label4.grid (row = 0, columnspan = 2)
+
+        global input4
+        input4 = tk.Entry(window4, width = 40)
+        input4.grid (row = 1, columnspan = 2)
+
+        #set button
+        button_ok4 = tk.Button(window4, text="Ok", command=ok4, width = 10)
+        button_ok4.grid (row = 2, column = 0)
+
+        button_cancel = tk.Button(window4, text="Cancel", command=cancel, width = 10)
+        button_cancel.grid (row = 2, column = 1)
+        window3.destroy()
+
+def ok4() :
+    window4.destroy
+    global input4
+    input4 = int(input4.get())
+    #error message apabila data tidak sesuai
+    if input4 < 0 :
+        messagebox.showerror("Terlalu kecil", "Nilai terkecil yang diperbolehkan adalah 1. Mohon coba kembali.")
+        window4.destroy()
+    elif input4 > 25:
+        messagebox.showerror("Terlalu besar", "Nilai terbesar yang diperbolehkan adalah 25. Mohon coba kembali.")
+        window4.destroy()
+    else :
+        window4.destroy()
+        #semua input sudah terkumpul, ambil variabel
+        global input1
+        global input2
+        global input3
+
+        #set integer variabel
+        input1 = int(input1)
+        input2 = int(input2)
+        input3 = int(input3)
+
+        #mulai menggambar 
+        turtle.getscreen()
+        turtle.screensize(1000,1000)
+        turtle.pensize(5)
+
+        turtle.pencolor("#000000")
+        turtle.penup()
+
+        turtle.setposition((-500 + 62 + input3*input1 // 2),-50)
+
+        turtle.pendown()
+        turtle.fillcolor("#FFFF00")
+        turtle.begin_fill()
+
+        turtle.forward(100)
+        turtle.left(60)
+        turtle.forward(100)
+        turtle.left(60)
+        turtle.forward(100)
+        turtle.left(60)
+        turtle.forward(100)
+        turtle.left(60)
+        turtle.forward(100)
+        turtle.left(60)
+        turtle.forward(100)
+        turtle.left(60)
+
+        turtle.hideturtle()
+        turtle.end_fill()
+        turtle.done()
+        
+#set button
+button_ok = tk.Button(window1, text="Ok", command=ok1, width = 10)
+button_ok.grid (row = 2, column = 0)
+
+button_cancel = tk.Button(window1, text="Cancel", command=cancel, width = 10)
+button_cancel.grid (row = 2, column = 1)
+
+window1.mainloop()

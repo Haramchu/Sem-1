@@ -1,0 +1,681 @@
+# import modul 
+import tkinter as tk
+import tkinter.ttk as ttk
+import tkinter.messagebox as showinfo
+import random
+list_meja = [1,2,3,4,5,6,7,8,9,10]
+dict_warna_meja = {}
+dict_perintah_meja = {}
+list_meja_isi = []
+dict_kode_ke_harga = {}
+dict_kode_ke_nama = {}
+dict_kode_ke_keunikan = {}
+daftar_kode_makanan = []
+daftar_kode_minuman = []
+daftar_kode_sampingan = []
+daftar_harga_pesanan = {1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{},9:{},10:{}}
+daftar_jumlah_pesanan = {1:{},2:{},3:{},4:{},5:{},6:{},7:{},8:{},9:{},10:{}}
+daftar_nama_meja = {}
+meja_mau_selesai = []
+list_meja_mau_isi = []
+list_menu_check_duplicate = []
+set_menu_check_duplicate = set()
+
+class Menu:
+    def __init__(self, kode_menu, nama_menu, harga):
+        self.kode_menu = kode_menu
+        self.nama_menu = nama_menu
+        self.harga = int(harga)
+
+class Meals(Menu):
+    def __init__(self, kode_menu, nama_menu, harga, tingkat_kegurihan):
+        super().__init__(kode_menu, nama_menu, harga)
+        self.tingkat_kegurihan = tingkat_kegurihan
+
+class Drinks(Menu):
+    def __init__(self, kode_menu, nama_menu, harga, tingkat_kemanisan):
+        super().__init__(kode_menu, nama_menu, harga)
+        self.tingkat_kemanisan = tingkat_kemanisan
+
+class Sides(Menu):
+    def __init__(self, kode_menu, nama_menu, harga, tingkat_keviralan):
+        super().__init__(kode_menu, nama_menu, harga)
+        self.tingkat_keviralan = tingkat_keviralan
+
+class Main(tk.Frame):
+    def __init__(self, master = None):
+        super().__init__(master)
+        self.master.geometry("400x200")
+        self.pack()
+        master.title("Kafe Daun-Daun Pacilkom v2.0 🌿")
+        
+        button1 = tk.Button(self, text="Buat Pesanan", width=30, command=self.buat_pesanan, bg="#4472C4", fg="white")
+        button2 = tk.Button(self, text="Selesai Gunakan Meja", width=30, command=self.selesai_gunakan_meja, bg="#4472C4", fg="white")
+        button1.grid(row=0, column=0, padx=10, pady=40)
+        button2.grid(row=1, column=0)    
+    def buat_pesanan(self):
+        BuatPesanan(self.master)
+    def selesai_gunakan_meja(self):
+        SelesaiGunakanMeja(self.master)
+
+class BuatPesanan(tk.Toplevel):
+    def __init__(self, master = None):
+        super().__init__(master)
+        self.master.geometry("400x200")
+        self.title("Kafe Daun-Daun Pacilkom v2.0 🌿")
+        self.lbl_nama = tk.Label(self, text="Siapa nama Anda?")
+        self.lbl_nama.grid(column=0, row=0, padx=20, pady=50)
+        button1 = tk.Button(self, text="Kembali", width=20, command= self.kembali, bg="#4472C4", fg="white")
+        button2 = tk.Button(self, text="Lanjut", width=20, command= self.lanjut, bg="#4472C4", fg="white")
+        button1.grid(row=1, column=0, padx=20, pady=20)
+        button2.grid(row=1, column=1, padx=20, pady=20)
+        self.nama = tk.StringVar()
+        self.input = tk.Entry(self, textvariable=self.nama, width=20)
+        self.input.grid(column = 1, row = 0, padx=20, pady=50)
+        self.mainloop()
+    def kembali(self):
+        self.destroy()
+
+    def lanjut(self):
+        self.destroy()
+        nomor_meja = random.randint(1,10)
+        if self.nama.get() == "" :
+            showinfo.showinfo(title = "Kafe Daun-Daun Pacilkom v2.0 🌿", message ="Input nama tidak boleh kosong")
+        else :
+            daftar_nama_meja[nomor_meja] = self.nama.get()
+            list_meja.remove(nomor_meja)
+            list_meja_mau_isi.append(nomor_meja)
+            MenuBuatPesanan(self.master)
+
+class MenuBuatPesanan(tk.Toplevel):
+    def __init__(self, master = None):
+        super().__init__(master)
+        self.geometry("800x500")
+        self.title("Kafe Daun-Daun Pacilkom v2.0 🌿")
+        self.lbl_nama = tk.Label(self, text=f"Nama pemesan: {daftar_nama_meja[list_meja_mau_isi[len(list_meja_mau_isi)-1]]}")
+        self.lbl_nama.grid(column=0, row=0, padx=30, pady=(3,20))
+        self.nama_meja = tk.Label(self, text=f"No meja: {list_meja_mau_isi[len(list_meja_mau_isi)-1]}")
+        self.nama_meja.grid(column=3, row=0, padx=10, pady=(3,20), sticky="e")
+        i=1
+        if daftar_kode_makanan != [] :
+            self.meals = tk.Label(self, text="MEALS")
+            self.meals.grid(column=0, row=i)
+            i += 1
+            self.kode = tk.Label(self, text="Kode", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kode.grid(column=0, row=i, sticky="e")
+            self.Nama = tk.Label(self, text="Nama", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Nama.grid(column=1, row=i, sticky="ew")
+            self.Harga = tk.Label(self, text="Harga", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Harga.grid(column=2, row=i, sticky="ew")
+            self.kegurihan = tk.Label(self, text="Kegurihan", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kegurihan.grid(column=3, row=i, sticky="ew")
+            self.jumlah = tk.Label(self, text="Jumlah", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.jumlah.grid(column=4, row=i, sticky="w")
+            i += 1
+            for kode_menu in daftar_kode_makanan :
+                makanan = Meals(kode_menu, dict_kode_ke_nama[kode_menu], dict_kode_ke_harga[kode_menu], dict_kode_ke_keunikan[kode_menu])
+                self.label_kode = tk.Label(self, text=f"{makanan.kode_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_kode.grid(column=0, row=i, sticky="e")
+                self.label_nama = tk.Label(self, text=f"{makanan.nama_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_nama.grid(column=1, row=i, sticky="ew")
+                self.label_harga = tk.Label(self, text=f"{makanan.harga}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_harga.grid(column=2, row=i, sticky="ew")
+                self.label_keunikan = tk.Label(self, text=f"{makanan.tingkat_kegurihan}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_keunikan.grid(column=3, row=i, sticky="ew")
+                self.jumlah = tk.IntVar()
+                self.input = tk.Entry(self,textvariable=self.jumlah, width=20)
+                self.input.grid(column = 4, row=i, sticky="ew")
+                harga_makanan = int(dict_kode_ke_harga[kode_menu]) * self.jumlah.get()
+                i += 1
+    
+        if daftar_kode_minuman != [] :
+            self.minuman = tk.Label(self, text="DRINKS")
+            self.minuman.grid(column=0, row=i, padx=10)
+            i += 1
+            self.kode = tk.Label(self, text="Kode", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kode.grid(column=0, row=i, sticky="e")
+            self.Nama = tk.Label(self, text="Nama", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Nama.grid(column=1, row=i, sticky="ew")
+            self.Harga = tk.Label(self, text="Harga", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Harga.grid(column=2, row=i, sticky="ew")
+            self.kegurihan = tk.Label(self, text="Kemanisan", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kegurihan.grid(column=3, row=i, sticky="ew")
+            self.jumlah = tk.Label(self, text="Jumlah", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.jumlah.grid(column=4, row=i, sticky="w")
+            i += 1
+            for kode_menu in daftar_kode_minuman :
+                minuman = Drinks(kode_menu, dict_kode_ke_nama[kode_menu], dict_kode_ke_harga[kode_menu], dict_kode_ke_keunikan[kode_menu])
+                self.label_kode = tk.Label(self, text=f"{minuman.kode_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_kode.grid(column=0, row=i, sticky="e")
+                self.label_nama = tk.Label(self, text=f"{minuman.nama_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_nama.grid(column=1, row=i, sticky="ew")
+                self.label_harga = tk.Label(self, text=f"{minuman.harga}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_harga.grid(column=2, row=i, sticky="ew")
+                self.label_keunikan = tk.Label(self, text=f"{minuman.tingkat_kemanisan}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_keunikan.grid(column=3, row=i, sticky="ew")
+                self.jumlah = tk.IntVar()
+                self.input = ttk.Combobox(self, textvariable=self.jumlah, values=[0, 1, 2, 3], width=20)
+                self.input.grid(column = 4, row=i, sticky="ew")
+                self.input.bind("<<ComboboxSelected>>",lambda event, self=self: self.masukkan_angka(self.input.get()))
+                harga_minuman = int(dict_kode_ke_harga[kode_menu]) * self.jumlah.get()
+                i += 1
+
+        if daftar_kode_sampingan != [] :
+            self.meals = tk.Label(self, text="SIDES")
+            self.meals.grid(column=0, row=i, padx=10)
+            i += 1
+            self.kode = tk.Label(self, text="Kode", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kode.grid(column=0, row=i, sticky="e")
+            self.Nama = tk.Label(self, text="Nama", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Nama.grid(column=1, row=i, sticky="ew")
+            self.Harga = tk.Label(self, text="Harga", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Harga.grid(column=2, row=i, sticky="ew")
+            self.kegurihan = tk.Label(self, text="Keviralan", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kegurihan.grid(column=3, row=i, sticky="ew")
+            self.jumlah = tk.Label(self, text="Jumlah", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.jumlah.grid(column=4, row=i, sticky="w")
+            i += 1
+            for kode_menu in daftar_kode_sampingan :
+                sampingan = Sides(kode_menu, dict_kode_ke_nama[kode_menu], dict_kode_ke_harga[kode_menu], dict_kode_ke_keunikan[kode_menu])
+                self.label_kode = tk.Label(self, text=f"{sampingan.kode_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_kode.grid(column=0, row=i, sticky="e")
+                self.label_nama = tk.Label(self, text=f"{sampingan.nama_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_nama.grid(column=1, row=i, sticky="ew")
+                self.label_harga = tk.Label(self, text=f"{sampingan.harga}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_harga.grid(column=2, row=i, sticky="ew")
+                self.label_keunikan = tk.Label(self, text=f"{sampingan.tingkat_keviralan}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_keunikan.grid(column=3, row=i, sticky="ew")
+                self.jumlah = tk.IntVar()
+                self.input = ttk.Combobox(self, textvariable=self.jumlah, values=[0, 1, 2, 3], width=20)
+                self.input.grid(column = 4, row=i, sticky="ew")
+                self.input.bind("<<ComboboxSelected>>", lambda event, self=self: self.masukkan_angka(self.input.get()))
+                harga_sampingan = int(dict_kode_ke_harga[kode_menu]) * self.jumlah.get()
+                # daftar_harga_pesanan[list_meja_isi[len(list_meja_isi)-1]][kode_menu] = self.jumlah.get()
+                i += 1
+        button1 = tk.Button(self, text="Kembali", width=18, command= self.kembali, bg="#4472C4", fg="white")
+        button2 = tk.Button(self, text="Ok", width=18, command= self.ok, bg="#4472C4", fg="white")
+        button3 = tk.Button(self, text="Ubah", width=5, command= self.ubah, bg="#4472C4", fg="white")
+        button1.grid(row=i+1, column= 1, padx=10, pady=(40,10),columnspan=2)
+        button2.grid(row=i+1, column= 2, padx=10, pady=(40,10),columnspan=2)
+        button3.grid(row=0, column= 4, pady=(3,20),sticky="w")
+        self.mainloop()
+    def masukkan_angka(self,jumlah_pesanan) :
+        print(jumlah_pesanan)
+    def kembali(self):
+        nomor_meja = list_meja_mau_isi[len(list_meja_mau_isi)-1]
+        list_meja.append(nomor_meja)
+        list_meja_mau_isi.remove(nomor_meja)
+        self.destroy()
+    def ok(self):
+        total_harga = 1
+        list_meja_isi.append(list_meja_mau_isi[0])
+        list_meja_mau_isi.clear()
+        # total_harga = self.jumlah_1.get() + self.jumlah_2.get() + self.jumlah_3.get() + self.jumlah_4.get() + self.jumlah_5.get() + self.jumlah_6.get()
+        if total_harga == 0 :
+            showinfo.showinfo(title = "Kafe Daun-Daun Pacilkom v2.0 🌿", message ="Anda belum memesan apapun")
+            nomor_meja = list_meja_isi[len(list_meja_isi)-1]
+            list_meja.append(nomor_meja)
+            list_meja_isi.remove(nomor_meja)
+        else :
+            daftar_harga_pesanan[list_meja_isi[len(list_meja_isi)-1]]["M01"] = self.jumlah.get()
+            daftar_harga_pesanan[list_meja_isi[len(list_meja_isi)-1]]["M02"] = self.jumlah.get()
+            daftar_harga_pesanan[list_meja_isi[len(list_meja_isi)-1]]["D01"] = self.jumlah.get()
+            daftar_harga_pesanan[list_meja_isi[len(list_meja_isi)-1]]["D02"] = self.jumlah.get()
+            daftar_harga_pesanan[list_meja_isi[len(list_meja_isi)-1]]["T01"] = self.jumlah.get()
+            daftar_harga_pesanan[list_meja_isi[len(list_meja_isi)-1]]["T02"] = self.jumlah.get()
+        self.destroy()
+    def ubah(self):
+        self.destroy()
+        UbahPesanan(self.master)
+class UbahPesanan(tk.Toplevel) :
+    def __init__(self, master = None):
+        super().__init__(master)
+        self.geometry("430x400")
+        self.title("Kafe Daun-Daun Pacilkom v2.0 🌿")
+        dict_perintah_meja[1] = self.mau_menggunakan_meja_1
+        dict_perintah_meja[2] = self.mau_menggunakan_meja_2
+        dict_perintah_meja[3] = self.mau_menggunakan_meja_3
+        dict_perintah_meja[4] = self.mau_menggunakan_meja_4
+        dict_perintah_meja[5] = self.mau_menggunakan_meja_5
+        dict_perintah_meja[6] = self.mau_menggunakan_meja_6
+        dict_perintah_meja[7] = self.mau_menggunakan_meja_7
+        dict_perintah_meja[8] = self.mau_menggunakan_meja_8
+        dict_perintah_meja[9] = self.mau_menggunakan_meja_9
+        dict_perintah_meja[10] = self.mau_menggunakan_meja_10
+        for nomor_meja in list_meja_mau_isi :
+            dict_warna_meja[nomor_meja] = "BLUE"
+            dict_perintah_meja[nomor_meja] = self.meja_sendiri
+        for nomor_meja in list_meja :
+            dict_warna_meja[nomor_meja] = "#808080"
+        for nomor_meja in list_meja_isi :
+            dict_warna_meja[nomor_meja] = "#FF0000"
+            dict_perintah_meja[nomor_meja] = self.skip
+        self.lbl_command = tk.Label(self, text="Silakan klik meja yang selesai digunakan:", width=40)
+        self.lbl_command.grid(column=2, row=0, columnspan=2)
+        self.info = tk.Label(self, text="Info", font = ("Segoe UI",12,"bold"), anchor="w")
+        self.info.grid (column=1, row = 6, padx=20)
+        self.info_1 = tk.Label(self, text="Merah : Terisi")
+        self.info_1.grid (column=1, row = 7, padx=20, columnspan=2, sticky="w")
+        self.info_2 = tk.Label(self, text="Abu-abu : Kosong")
+        self.info_2.grid (column=1, row = 8, padx=20, columnspan=2, sticky="w")
+        self.info_3 = tk.Label(self, text="Biru : Meja Anda")
+        self.info_3.grid (column=1, row = 9, padx=20, columnspan=2, sticky="w")
+        button1 = tk.Button(self, text="1", width=15, command= dict_perintah_meja[1], bg=dict_warna_meja[1], fg="white")
+        button2 = tk.Button(self, text="2", width=15, command= dict_perintah_meja[2], bg=dict_warna_meja[2], fg="white")
+        button3 = tk.Button(self, text="3", width=15, command= dict_perintah_meja[3], bg=dict_warna_meja[3], fg="white")
+        button4 = tk.Button(self, text="4", width=15, command= dict_perintah_meja[4], bg=dict_warna_meja[4], fg="white")
+        button5 = tk.Button(self, text="5", width=15, command= dict_perintah_meja[5], bg=dict_warna_meja[5], fg="white")
+        button6 = tk.Button(self, text="6", width=15, command= dict_perintah_meja[6], bg=dict_warna_meja[6], fg="white")
+        button7 = tk.Button(self, text="7", width=15, command= dict_perintah_meja[7], bg=dict_warna_meja[7], fg="white")
+        button8 = tk.Button(self, text="8", width=15, command= dict_perintah_meja[8], bg=dict_warna_meja[8], fg="white")
+        button9 = tk.Button(self, text="9", width=15, command= dict_perintah_meja[9], bg=dict_warna_meja[9], fg="white")
+        button10 = tk.Button(self, text="10", width=15, command= dict_perintah_meja[10], bg=dict_warna_meja[10], fg="white")
+        button1.grid(row=1, column= 2, pady = 5)
+        button2.grid(row=2, column= 2, pady = 5)
+        button3.grid(row=3, column= 2, pady = 5)
+        button4.grid(row=4, column= 2, pady = 5)
+        button5.grid(row=5, column= 2, pady = 5)
+        button6.grid(row=1, column= 3, pady = 5)
+        button7.grid(row=2, column= 3, pady = 5)
+        button8.grid(row=3, column= 3, pady = 5)
+        button9.grid(row=4, column= 3, pady = 5)
+        button10.grid(row=5, column= 3, pady = 5)
+        button_kembali = tk.Button(self, text="Kembali", width=18, command= self.kembali_menu, bg="#4472C4", fg="white")
+        button_kembali.grid(row=10, column= 2,pady = 15, columnspan=2)
+        self.mainloop()
+    def kembali_menu(self):
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def skip(self):
+        self.destroy()
+        showinfo.showinfo(title = "Kafe Daun-Daun Pacilkom v2.0 🌿", message ="Tidak bisa memilih meja orang lain")
+        MenuBuatPesanan(self.master)
+    def meja_sendiri(self):
+        self.destroy()
+        showinfo.showinfo(title = "Kafe Daun-Daun Pacilkom v2.0 🌿", message ="Tidak bisa memilih meja sendiri")
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_1(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(1)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(1)
+        daftar_nama_meja[1] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_2(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(2)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(2)
+        daftar_nama_meja[2] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_3(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(3)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(3)
+        daftar_nama_meja[3] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_4(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(4)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(4)
+        daftar_nama_meja[4] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_5(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(5)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(5)
+        daftar_nama_meja[5] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_6(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(6)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(6)
+        daftar_nama_meja[6] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_7(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(7)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(7)
+        daftar_nama_meja[7] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_8(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(8)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(8)
+        daftar_nama_meja[8] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_9(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(9)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(9)
+        daftar_nama_meja[9] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+    def mau_menggunakan_meja_10(self):
+        nama_pemesan = daftar_nama_meja[list_meja_mau_isi[0]]
+        list_meja.append(list_meja_mau_isi[0])
+        list_meja.remove(10)
+        list_meja.sort()
+        list_meja_mau_isi.clear()
+        list_meja_mau_isi.append(10)
+        daftar_nama_meja[10] = nama_pemesan
+        self.destroy()
+        MenuBuatPesanan(self.master)
+  
+class SelesaiGunakanMeja(tk.Toplevel):
+    def __init__(self, master = None):
+        super().__init__(master)
+        if len(list_meja) == 10 :
+            showinfo.showinfo(title = "Kafe Daun-Daun Pacilkom v2.0 🌿", message ="Belum ada meja yang dipesan")
+            self.destroy()
+        else :
+            self.geometry("430x400")
+            self.title("Kafe Daun-Daun Pacilkom v2.0 🌿")
+            dict_perintah_meja[1] = self.selesai_meja_1
+            dict_perintah_meja[2] = self.selesai_meja_2
+            dict_perintah_meja[3] = self.selesai_meja_3
+            dict_perintah_meja[4] = self.selesai_meja_4
+            dict_perintah_meja[5] = self.selesai_meja_5
+            dict_perintah_meja[6] = self.selesai_meja_6
+            dict_perintah_meja[7] = self.selesai_meja_7
+            dict_perintah_meja[8] = self.selesai_meja_8
+            dict_perintah_meja[9] = self.selesai_meja_9
+            dict_perintah_meja[10] = self.selesai_meja_10
+            for nomor_meja in list_meja :
+                dict_warna_meja[nomor_meja] = "#808080"
+                dict_perintah_meja[nomor_meja] = self.skip
+            for nomor_meja in list_meja_isi :
+                dict_warna_meja[nomor_meja] = "#FF0000"
+            self.lbl_command = tk.Label(self, text="Silakan klik meja yang selesai digunakan:", width=40)
+            self.lbl_command.grid(column=2, row=0, columnspan=2)
+            self.info = tk.Label(self, text="Info", font = ("Segoe UI",12,"bold"), anchor="w")
+            self.info.grid (column=1, row = 6, padx=20)
+            self.info_1 = tk.Label(self, text="Merah : Terisi")
+            self.info_1.grid (column=1, row = 7, padx=20, columnspan=2, sticky="w")
+            self.info_2 = tk.Label(self, text="Abu-abu : Kosong")
+            self.info_2.grid (column=1, row = 8, padx=20, columnspan=2, sticky="w")
+            button1 = tk.Button(self, text="1", width=15, command= dict_perintah_meja[1], bg=dict_warna_meja[1], fg="white")
+            button2 = tk.Button(self, text="2", width=15, command= dict_perintah_meja[2], bg=dict_warna_meja[2], fg="white")
+            button3 = tk.Button(self, text="3", width=15, command= dict_perintah_meja[3], bg=dict_warna_meja[3], fg="white")
+            button4 = tk.Button(self, text="4", width=15, command= dict_perintah_meja[4], bg=dict_warna_meja[4], fg="white")
+            button5 = tk.Button(self, text="5", width=15, command= dict_perintah_meja[5], bg=dict_warna_meja[5], fg="white")
+            button6 = tk.Button(self, text="6", width=15, command= dict_perintah_meja[6], bg=dict_warna_meja[6], fg="white")
+            button7 = tk.Button(self, text="7", width=15, command= dict_perintah_meja[7], bg=dict_warna_meja[7], fg="white")
+            button8 = tk.Button(self, text="8", width=15, command= dict_perintah_meja[8], bg=dict_warna_meja[8], fg="white")
+            button9 = tk.Button(self, text="9", width=15, command= dict_perintah_meja[9], bg=dict_warna_meja[9], fg="white")
+            button10 = tk.Button(self, text="10", width=15, command= dict_perintah_meja[10], bg=dict_warna_meja[10], fg="white")
+            button1.grid(row=1, column= 2, pady = 5)
+            button2.grid(row=2, column= 2, pady = 5)
+            button3.grid(row=3, column= 2, pady = 5)
+            button4.grid(row=4, column= 2, pady = 5)
+            button5.grid(row=5, column= 2, pady = 5)
+            button6.grid(row=1, column= 3, pady = 5)
+            button7.grid(row=2, column= 3, pady = 5)
+            button8.grid(row=3, column= 3, pady = 5)
+            button9.grid(row=4, column= 3, pady = 5)
+            button10.grid(row=5, column= 3, pady = 5)
+            button_kembali = tk.Button(self, text="Kembali", width=18, command= self.kembali, bg="#4472C4", fg="white")
+            button_kembali.grid(row=9, column= 2,columnspan=2)
+            self.mainloop()
+    def kembali(self):
+        self.destroy()
+    def skip(self):
+        showinfo.showinfo(title = "Kafe Daun-Daun Pacilkom v2.0 🌿", message ="Meja belum memesan")
+        self.destroy()
+    def selesai_meja_1(self):
+        meja_mau_selesai.append(1)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_2(self):
+        meja_mau_selesai.append(2)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_3(self):
+        meja_mau_selesai.append(3)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_4(self):
+        meja_mau_selesai.append(4)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_5(self):
+        meja_mau_selesai.append(5)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_6(self):
+        meja_mau_selesai.append(6)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_7(self):
+        meja_mau_selesai.append(7)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_8(self):
+        meja_mau_selesai.append(8)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_9(self):
+        meja_mau_selesai.append(9)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)
+    def selesai_meja_10(self):
+        meja_mau_selesai.append(10)
+        self.destroy()
+        SelesaiMenggunakanMeja(self.master)   
+
+class SelesaiMenggunakanMeja(tk.Toplevel):
+    def __init__(self, master = None):
+        super().__init__(master)
+        self.geometry("800x500")
+        self.title("Kafe Daun-Daun Pacilkom v2.0 🌿")
+        self.lbl_nama = tk.Label(self, text=f"Nama pemesan: {daftar_nama_meja[meja_mau_selesai[0]]}")
+        self.lbl_nama.grid(column=0, row=0, padx=30, pady=(3,20))
+        self.nama_meja = tk.Label(self, text=f"No meja: {meja_mau_selesai[0]}")
+        self.nama_meja.grid(column=3, row=0, padx=10, pady=(3,20), sticky="e")
+        i=1
+        if daftar_kode_makanan != [] :
+            self.meals = tk.Label(self, text="MEALS")
+            self.meals.grid(column=0, row=i)
+            i += 1
+            self.kode = tk.Label(self, text="Kode", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kode.grid(column=0, row=i, sticky="e")
+            self.Nama = tk.Label(self, text="Nama", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Nama.grid(column=1, row=i, sticky="ew")
+            self.Harga = tk.Label(self, text="Harga", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Harga.grid(column=2, row=i, sticky="ew")
+            self.kegurihan = tk.Label(self, text="Kegurihan", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kegurihan.grid(column=3, row=i, sticky="ew")
+            self.jumlah = tk.Label(self, text="Jumlah", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.jumlah.grid(column=4, row=i, sticky="w")
+            i += 1
+            for kode_menu in daftar_kode_makanan :
+                makanan = Meals(kode_menu, dict_kode_ke_nama[kode_menu], dict_kode_ke_harga[kode_menu], dict_kode_ke_keunikan[kode_menu])
+                self.label_kode = tk.Label(self, text=f"{makanan.kode_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_kode.grid(column=0, row=i, sticky="e")
+                self.label_nama = tk.Label(self, text=f"{makanan.nama_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_nama.grid(column=1, row=i, sticky="ew")
+                self.label_harga = tk.Label(self, text=f"{makanan.harga}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_harga.grid(column=2, row=i, sticky="ew")
+                self.label_keunikan = tk.Label(self, text=f"{makanan.tingkat_kegurihan}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_keunikan.grid(column=3, row=i, sticky="ew")
+                self.jumlah_pesanan = tk.Label(self, text=f"{daftar_harga_pesanan[meja_mau_selesai[0]][kode_menu]}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.jumlah_pesanan.grid(column=4, row=i, sticky="ew")
+                i += 1
+    
+        if daftar_kode_minuman != [] :
+            self.minuman = tk.Label(self, text="DRINKS")
+            self.minuman.grid(column=0, row=i, padx=10)
+            i += 1
+            self.kode = tk.Label(self, text="Kode", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kode.grid(column=0, row=i, sticky="e")
+            self.Nama = tk.Label(self, text="Nama", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Nama.grid(column=1, row=i, sticky="ew")
+            self.Harga = tk.Label(self, text="Harga", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Harga.grid(column=2, row=i, sticky="ew")
+            self.kegurihan = tk.Label(self, text="Kemanisan", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kegurihan.grid(column=3, row=i, sticky="ew")
+            self.jumlah = tk.Label(self, text="Jumlah", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.jumlah.grid(column=4, row=i, sticky="w")
+            i += 1
+            for kode_menu in daftar_kode_minuman :
+                minuman = Drinks(kode_menu, dict_kode_ke_nama[kode_menu], dict_kode_ke_harga[kode_menu], dict_kode_ke_keunikan[kode_menu])
+                self.label_kode = tk.Label(self, text=f"{minuman.kode_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_kode.grid(column=0, row=i, sticky="e")
+                self.label_nama = tk.Label(self, text=f"{minuman.nama_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_nama.grid(column=1, row=i, sticky="ew")
+                self.label_harga = tk.Label(self, text=f"{minuman.harga}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_harga.grid(column=2, row=i, sticky="ew")
+                self.label_keunikan = tk.Label(self, text=f"{minuman.tingkat_kemanisan}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_keunikan.grid(column=3, row=i, sticky="ew")
+                self.jumlah_pesanan = tk.Label(self, text=f"{daftar_harga_pesanan[meja_mau_selesai[0]][kode_menu]}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.jumlah_pesanan.grid(column=4, row=i, sticky="ew")
+                i += 1
+
+        if daftar_kode_sampingan != [] :
+            self.meals = tk.Label(self, text="SIDES")
+            self.meals.grid(column=0, row=i, padx=10)
+            i += 1
+            self.kode = tk.Label(self, text="Kode", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kode.grid(column=0, row=i, sticky="e")
+            self.Nama = tk.Label(self, text="Nama", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Nama.grid(column=1, row=i, sticky="ew")
+            self.Harga = tk.Label(self, text="Harga", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.Harga.grid(column=2, row=i, sticky="ew")
+            self.kegurihan = tk.Label(self, text="Keviralan", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.kegurihan.grid(column=3, row=i, sticky="ew")
+            self.jumlah = tk.Label(self, text="Jumlah", borderwidth=1, relief="sunken", width=20, anchor="w")
+            self.jumlah.grid(column=4, row=i, sticky="w")
+            i += 1
+            for kode_menu in daftar_kode_sampingan :
+                sampingan = Sides(kode_menu, dict_kode_ke_nama[kode_menu], dict_kode_ke_harga[kode_menu], dict_kode_ke_keunikan[kode_menu])
+                self.label_kode = tk.Label(self, text=f"{sampingan.kode_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_kode.grid(column=0, row=i, sticky="e")
+                self.label_nama = tk.Label(self, text=f"{sampingan.nama_menu}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_nama.grid(column=1, row=i, sticky="ew")
+                self.label_harga = tk.Label(self, text=f"{sampingan.harga}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_harga.grid(column=2, row=i, sticky="ew")
+                self.label_keunikan = tk.Label(self, text=f"{sampingan.tingkat_keviralan}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.label_keunikan.grid(column=3, row=i, sticky="ew")
+                self.jumlah_pesanan = tk.Label(self, text=f"{daftar_harga_pesanan[meja_mau_selesai[0]][kode_menu]}", borderwidth=1, relief="sunken", width=20, anchor="w")
+                self.jumlah_pesanan.grid(column=4, row=i, sticky="ew")
+                i += 1
+        button1 = tk.Button(self, text="Kembali", width=18, command= self.kembali, bg="#4472C4", fg="white")
+        button2 = tk.Button(self, text="Selesai Gunakan Meja", width=18, command= self.selesai_gunakan_meja, bg="#4472C4", fg="white")
+        button1.grid(row=i+1, column= 1, padx=10, pady=(40,10),columnspan=2)
+        button2.grid(row=i+1, column= 2, padx=10, pady=(40,10),columnspan=2)
+        self.mainloop()
+    def kembali(self):
+        meja_mau_selesai.clear()
+        self.destroy()
+        self.mainloop()
+    def selesai_gunakan_meja(self):
+        daftar_harga_pesanan[meja_mau_selesai[0]] = {}
+        list_meja_isi.remove(meja_mau_selesai[0])
+        list_meja.append(meja_mau_selesai[0])
+        list_meja.sort()
+        meja_mau_selesai.clear()
+        self.destroy()
+        SelesaiGunakanMeja(self.master)
+
+#open file menu.txt dan membaca
+file_open = open("menu.txt")
+file_read = file_open.readlines()
+#function menu tidak valid
+
+def main():
+    file_open = open("menu1.txt")
+    file_read = file_open.readlines()
+    for file_line in file_read :
+        file_line = file_line.strip().split(";")
+        #pengecekan apabila format menu tidak benar (hanya terdapat 3 index setelah ; dislice)
+        if len(file_line) == 1 :
+            file_line[0] = file_line[0].strip("===")
+            file_line[0] = f"{file_line[0]} : \n"
+        #strip === dari menu.txt
+        if len(file_line) == 3 or len(file_line) >=5 :
+            print ("Daftar menu tidak valid, cek kembali menu.txt")
+            exit ()
+        #mencegah subjudul menu dicoba untuk diambil indexnya, dan terjadi index error
+        elif len(file_line) == 4 :
+            file_line[0] = file_line[0]
+            kode_menu = file_line[0]
+            nama_makanan = file_line[1]
+            Harga = file_line [2]
+            keunikan = file_line [3]
+            file_line.append ("\n")
+            #apabila yang diinput di bagian harga bukan angka
+            try :
+                int (Harga)
+            except ValueError :
+                print ("Daftar menu tidak valid, cek kembali menu.txt")
+                exit ()
+            #apabila nama makanan hanya mengandung angka (dianggap tidak ada nama makanan yang berupa angka)
+            try :
+                if type(int(nama_makanan)) == int :
+                    print ("Daftar menu tidak valid, cek kembali menu.txt")
+                    exit ()
+            except ValueError :
+                pass
+            #memasukkan semua kode menu, nama makanan, dan harga ke list atau dictionary yang diperlukan (nama dictionary sesuai kegunaan)
+            dict_kode_ke_harga[kode_menu] = Harga
+            dict_kode_ke_nama[kode_menu] = nama_makanan
+            dict_kode_ke_keunikan[kode_menu] = keunikan
+            if kode_menu[:1] == "M" :
+                daftar_kode_makanan.append(kode_menu)
+            elif kode_menu[:1] == "D" :
+                daftar_kode_minuman.append(kode_menu)
+            elif kode_menu[:1] == "T" :
+                daftar_kode_sampingan.append(kode_menu)
+            list_menu_check_duplicate.append(nama_makanan)
+            set_menu_check_duplicate.add(nama_makanan)
+            #validasi menu untuk file nama makanan yang ada dua atau lebih
+            if len(list_menu_check_duplicate) == len(set_menu_check_duplicate) :
+                pass
+            else :
+                print ("Daftar menu tidak valid, cek kembali menu.txt")
+                exit ()
+    #apabila menu kosong atau dictionary kosong
+    if daftar_kode_makanan == {} and daftar_kode_minuman == {} and daftar_kode_sampingan == {}:
+        print ("Menu kosong, cek kembali menu.txt")
+        exit ()
+    
+    window = tk.Tk()
+    cafe = Main(window)
+    window.mainloop()
+
+
+if __name__ == '__main__':
+    main()

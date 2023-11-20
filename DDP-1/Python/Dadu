@@ -1,0 +1,14 @@
+#setup import dan variabel
+import random
+Dadu = 0
+total_lempar = 0
+
+#loop agar dadu berjalan terus sampai ketemu angka 6 dan perhitungan total lempar
+while (Dadu != 6) :
+    Dadu = random.randint(1,6)
+    print(Dadu)
+    total_lempar = total_lempar + 1
+
+#apabila dadu 6, print hasil akhir
+if (Dadu == 6) :
+    print (f"Selesai. Dadu dilempar {total_lempar} kali hingga angka 6 muncul.")

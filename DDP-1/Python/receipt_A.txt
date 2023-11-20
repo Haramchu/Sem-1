@@ -1,0 +1,6 @@
+M01;Thai Beef Salad;1;52000;52000
+M02;Beef Korean Noodle;1;56000;56000
+T01;Soft Boiled Egg;1;10000;10000
+T02;Edamame;1;10000;10000
+
+Total 128000
